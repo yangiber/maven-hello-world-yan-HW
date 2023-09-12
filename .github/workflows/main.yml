@@ -28,6 +28,21 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 17
+    - name: Increment Version
+      run: |
+          ./mvnw build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion} versions:commit
+          git config user.name yangiber
+          git config user.email yangiber@gmail.com
+          git add .
+          git commit -m "updated version in pom.xml"
+          git push
+    - name: Create Git Tag
+      run: |
+          export version=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout')
+          git config user.name yangiber
+          git config user.email yangiber@gmail.com
+          git tag -a $version -m "$version"
+          git push origin $version      
 
     - name: Build and test project with Maven
       run: mvn -B package --file myapp/pom.xml
@@ -42,7 +57,7 @@ jobs:
           with:
             java-version: 17
         - run: mvn -B package --file myapp/pom.xml -DskipTests
-        - run: mkdir staging && cp ${GITHUB_WORKSPACE}/myapp/target/myapp-1.0.0.jar staging
+        - run: mkdir staging && cp ${GITHUB_WORKSPACE}/myapp/target/myapp-${version}.jar staging
         - uses: actions/upload-artifact@v1
           with:
             name: Package
@@ -58,6 +73,6 @@ jobs:
       - name: Login to Docker Hub
         run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username  ${{ secrets.DOCKER_USERNAME }} --password-stdin 
       - name: Build Container image
-        run: docker build -t ${{ secrets.DOCKER_REPO }}:1.0.${{ secrets.BUILD_NUMBER }} .
+        run: docker build -t ${{ secrets.DOCKER_REPO }}:{$version} .
       - name: Publish Docker image
-        run: docker push ${{ secrets.DOCKER_REPO }}:1.0.${{ secrets.BUILD_NUMBER }}
+        run: docker push ${{ secrets.DOCKER_REPO }}:{$version}
