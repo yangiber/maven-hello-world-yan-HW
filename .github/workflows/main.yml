@@ -34,7 +34,7 @@ jobs:
           git config user.name yangiber
           git config user.email yangiber@gmail.com
           git add .
-          git commit -m "updated version in myapp/pom.xml"
+          git commit -m "updated version in pom.xml"
           git push
     - name: Create Git Tag
       run: |
