@@ -3,7 +3,7 @@ RUN mkdir -p /workspace/myapp
 WORKDIR /workspace/myapp
 COPY myapp/pom.xml /workspace/myapp
 COPY myapp /workspace/myapp
-RUN mvn -B package --file myapp/pom.xml -DskipTests
+RUN mvn -B package --file pom.xml -DskipTests
 
 FROM openjdk:17-slim
 COPY --from=build /workspace/myapp/target/myapp-1.0.0.jar app.jar
