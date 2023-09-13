@@ -6,6 +6,6 @@ COPY myapp /workspace/myapp
 RUN mvn -B package --file pom.xml -DskipTests
 
 FROM openjdk:17-slim
-COPY --from=build /workspace/myapp/target/myapp-1.0.0.jar app.jar
+COPY --from=build /workspace/myapp/target/*.jar app.jar
 EXPOSE 6379
 ENTRYPOINT ["java","-jar","app.jar"]

@@ -70,7 +70,7 @@ jobs:
         working-directory: ./myapp
         run: |
           VERSION=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )
-          echo "::set-output name=version::$VERSION"
+          echo "name=version::$VERSION"
         id: get_version  
       - name: Build Container image
         run: docker build -t ${{ secrets.DOCKER_REPO }}:1.0.${{ secrets.BUILD_NUMBER }} .
