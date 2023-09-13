@@ -71,10 +71,10 @@ jobs:
       - name: Get version
         working-directory: ./myapp
         run: |
-          VERSION=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )
+          env.VERSION=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )
           echo "name=version::$VERSION"
         id: get_version  
       - name: Build Container image
-        run: docker build -t ${{ secrets.DOCKER_REPO }}:$VERSION .
+        run: docker build -t ${{ secrets.DOCKER_REPO }}:${{env.VERSION}} .
       - name: Publish Docker image
-        run: docker push ${{ secrets.DOCKER_REPO }}:$VERSION
+        run: docker push ${{ secrets.DOCKER_REPO }}:${{env.VERSION}}
