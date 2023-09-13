@@ -62,6 +62,6 @@ jobs:
       - name: Login to Docker Hub
         run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username  ${{ secrets.DOCKER_USERNAME }} --password-stdin 
       - name: Build Container image
-        run: docker build -t ${{ secrets.DOCKER_REPO }}:latest .
+        run: docker build -t ${{ secrets.DOCKER_REPO }}:1.0.${{ secrets.BUILD_NUMBER }} .
       - name: Publish Docker image
-        run: docker push ${{ secrets.DOCKER_REPO }}:latest
+        run: docker push ${{ secrets.DOCKER_REPO }}:1.0.${{ secrets.BUILD_NUMBER }}
