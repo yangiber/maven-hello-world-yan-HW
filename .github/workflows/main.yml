@@ -11,6 +11,8 @@ jobs:
   build_and_test:
     runs-on: ubuntu-latest
 
+    outputs:
+      output1:  ${{ steps.updateVersion.outputs.version }}
     services:
       redis:
         image: redis
@@ -30,8 +32,11 @@ jobs:
         java-version: 17
        
     - name: Update pom version
+      id: updateVersion
       working-directory: ./myapp 
-      run: mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion} versions:commit
+      run: |
+        mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion} versions:commit
+        "version=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )" >> "$GITHUB_OUTPUT"
     - name: Commit version changes
       run: |
         git config --global user.name 'Yan Giber'
@@ -61,16 +66,14 @@ jobs:
     name: Publish to Docker Hub
     runs-on: ubuntu-latest
     needs: [build_and_test]
-
+    env:
+      VERSION: ${{ needs.build_and_test.outputs.output1 }}
     steps:
+
       - uses: actions/checkout@v2
       - name: Login to Docker Hub
         run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username  ${{ secrets.DOCKER_USERNAME }} --password-stdin
       - name: Build Container image
-        working-directory: ./myapp
-        run: |
-          VERSION=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )
-          echo "name=$VERSION"
-          docker build -t ${{ secrets.DOCKER_REPO }}:$VERSION .
+        run: docker build -t ${{ secrets.DOCKER_REPO }}:$VERSION .
       - name: Publish Docker image
         run: docker push ${{ secrets.DOCKER_REPO }}:$VERSION
