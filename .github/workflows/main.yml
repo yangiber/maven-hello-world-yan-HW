@@ -58,6 +58,8 @@ jobs:
             path: staging
   
   build-docker-image:
+    env:
+      VERSION: null
     name: Publish to Docker Hub
     runs-on: ubuntu-latest
     needs: [build_and_test]
