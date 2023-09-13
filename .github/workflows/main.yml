@@ -72,7 +72,7 @@ jobs:
         working-directory: ./myapp
         run: |
           env.VERSION=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )
-          echo "name=version::$VERSION"
+          echo "name=${{env.VERSION}}"
         id: get_version  
       - name: Build Container image
         run: docker build -t ${{ secrets.DOCKER_REPO }}:${{env.VERSION}} .
