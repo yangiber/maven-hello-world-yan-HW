@@ -28,7 +28,16 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 17
-
+       
+    - name: Update pom version
+      working-directory: ./myapp 
+      run: mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion} versions:commit
+    - name: Commit report
+      run: |
+        git config --global user.name 'Yan Giber'
+        git config --global user.email 'yangiber@gmail.com'
+        git commit -am "Automated report"
+        git push  
     - name: Build and test project with Maven
       run: mvn -B package --file myapp/pom.xml
 
