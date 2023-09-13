@@ -71,6 +71,6 @@ jobs:
         run: |
           VERSION=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )
           echo "name=$VERSION"
-          run: docker build -t ${{ secrets.DOCKER_REPO }}:$VERSION .
+          docker build -t ${{ secrets.DOCKER_REPO }}:$VERSION .
       - name: Publish Docker image
         run: docker push ${{ secrets.DOCKER_REPO }}:$VERSION
