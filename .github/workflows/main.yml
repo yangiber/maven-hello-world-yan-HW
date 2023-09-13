@@ -59,7 +59,7 @@ jobs:
   
   build-docker-image:
     env:
-      VERSION: null
+      VERSION: 1.0.0
     name: Publish to Docker Hub
     runs-on: ubuntu-latest
     needs: [build_and_test]
@@ -71,7 +71,7 @@ jobs:
       - name: Get version
         working-directory: ./myapp
         run: |
-          env.VERSION=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )
+          ${{env.VERSION}}=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )
           echo "name=${{env.VERSION}}"
         id: get_version  
       - name: Build Container image
